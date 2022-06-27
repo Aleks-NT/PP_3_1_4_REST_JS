@@ -23,7 +23,7 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
     @Column
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @ManyToMany(fetch = FetchType.LAZY)
     private List<Role> roles;
 
     public User() {
