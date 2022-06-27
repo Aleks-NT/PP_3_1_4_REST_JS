@@ -2,60 +2,50 @@ package com.example.PP_3_1_4_REST_JS.service;
 
 import com.example.PP_3_1_4_REST_JS.model.User;
 import com.example.PP_3_1_4_REST_JS.repository.UserRepository;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.transaction.Transactional;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
-@Transactional
+
 @Service
+@Transactional
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
+    public UserServiceImpl(UserRepository repository) {
+        this.userRepository = repository;
     }
 
     @Override
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
-    }
-
-
-    @Override
-    public void addUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User " + username + " not found"));
+        return user;
     }
 
     @Override
-    public void deleteUserById(long id) {
+    public User saveUser(User user) {
+        return userRepository.save(user);
+    }
+
+    @Override
+    public User getUser(Long id) {
+        return userRepository.findById(id).get();
+    }
+
+    @Override
+    public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
 
-
     @Override
-    public User getUserById(long id) {
-        return userRepository.getUserById(id);
+    public List<User> getUsersList() {
+        return userRepository.findAll();
     }
 
-    @Override
-    public void updateUser(User user) {
-        String passwordFromForm = user.getPassword();
-        String encodedPasswordFromBase = userRepository.getUserById(user.getId()).getPassword();
-        if (passwordFromForm.length() == 0 || passwordFromForm.equals(encodedPasswordFromBase)) {
-            user.setPassword(encodedPasswordFromBase);
-        } else {
-            if (passwordEncoder.matches(passwordFromForm, encodedPasswordFromBase)) {
-                user.setPassword(encodedPasswordFromBase);
-            } else {
-                user.setPassword(passwordEncoder.encode(passwordFromForm));
-            }
-        }
-        userRepository.save(user);
-    }
 }

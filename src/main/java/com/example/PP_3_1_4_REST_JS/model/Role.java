@@ -1,37 +1,23 @@
 package com.example.PP_3_1_4_REST_JS.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
-import java.util.Set;
+import javax.persistence.Entity;
 
 @Entity
 @Table(name = "roles")
 public class Role implements GrantedAuthority {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
     private Long id;
-
-    @Column(name = "role")
-    private String name;
-
-    @JsonIgnore
-    @ManyToMany(mappedBy = "roles")
-    Set<User> users;
+    private String roleName;
 
     public Role() {
     }
 
-    @Override
-    public String toString() {
-        return name;
-    }
-
-    public Role(String role) {
-        this.name = role;
+    public Role(String roleName) {
+        this.roleName = roleName;
     }
 
     public Long getId() {
@@ -42,26 +28,16 @@ public class Role implements GrantedAuthority {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getRoleName() {
+        return roleName;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Set<User> getUsers() {
-        return users;
-    }
-
-    public void setUsers(Set<User> users) {
-        this.users = users;
+    public void setRoleName(String name) {
+        this.roleName = name;
     }
 
     @Override
     public String getAuthority() {
-        return getName();
+        return getRoleName();
     }
-
-
 }
