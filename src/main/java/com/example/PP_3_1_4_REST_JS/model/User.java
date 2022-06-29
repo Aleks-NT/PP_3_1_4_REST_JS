@@ -117,7 +117,7 @@ public class User implements UserDetails {
     }
 
     public void setPassword(String password) throws Exception {
-        if (password.isEmpty() || password == "") {
+        if (password.isEmpty()) {
             throw new Exception("Password can't be empty!");
         } else {
             this.password = password;
